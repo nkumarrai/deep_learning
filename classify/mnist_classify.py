@@ -11,7 +11,9 @@ import tensorflow as tf
 import numpy as np
 import datetime
 import matplotlib.pyplot as plt
-get_ipython().magic(u'matplotlib inline')
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
@@ -129,7 +131,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 # Run
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
-  for i in range(200):
+  for i in range(20000):
     batch = mnist.train.next_batch(50)
     if i % 100 == 0:
       train_accuracy = accuracy.eval(feed_dict={
