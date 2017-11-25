@@ -11,10 +11,13 @@ import tensorflow as tf
 import numpy as np
 import datetime
 import matplotlib.pyplot as plt
+import os
 #get_ipython().magic(u'matplotlib inline')
 
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("MNIST_data/")
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
 # In[2]:
@@ -24,7 +27,7 @@ sample_image = mnist.train.next_batch(1)[0]
 print(sample_image.shape)
 
 sample_image = sample_image.reshape([28, 28])
-plt.imshow(sample_image, cmap='Greys')
+#plt.imshow(sample_image, cmap='Greys')
 
 
 # In[3]:
@@ -130,7 +133,7 @@ with tf.Session() as sess:
     generated_image = sess.run(generated_image_output,
                                 feed_dict={z_placeholder: z_batch})
     generated_image = generated_image.reshape([28, 28])
-    plt.imshow(generated_image, cmap='Greys')
+    #plt.imshow(generated_image, cmap='Greys')
 
 
 # In[7]:
@@ -205,7 +208,6 @@ tf.summary.scalar('Discriminator_loss_fake', d_loss_fake)
 images_for_tensorboard = generator(z_placeholder, batch_size, z_dimensions)
 values_for_tensorboard = discriminator(x_placeholder) 
 tf.summary.image('Generated_images', images_for_tensorboard, 5)
-tf.summary.image('Discrimnator_images', values_for_tensorboard, 5)
 merged = tf.summary.merge_all()
 logdir = "tensorboard/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "/"
 writer = tf.summary.FileWriter(logdir, sess.graph)
@@ -221,7 +223,7 @@ saver = tf.train.Saver()
 
 # Pre-train discriminator
 for i in range(300):
- = np.random.normal(0, 1, size=[batch_size, z_dimensions])
+    z_batch = np.random.normal(0, 1, size=[batch_size, z_dimensions])
     real_image_batch = mnist.train.next_batch(batch_size)[0].reshape([batch_size, 28, 28, 1])
     _, __, dLossReal, dLossFake = sess.run([d_trainer_real, d_trainer_fake, d_loss_real, d_loss_fake],
                                            {x_placeholder: real_image_batch, z_placeholder: z_batch})
@@ -254,9 +256,13 @@ for i in range(100000):
         z_batch = np.random.normal(0, 1, size=[1, z_dimensions])
         generated_images = generator(z_placeholder, 1, z_dimensions)
         images = sess.run(generated_images, {z_placeholder: z_batch})
-        plt.imshow(images[0].reshape([28, 28]), cmap='Greys')
-        plt.show()
-
+	tmp = images[0].reshape([28, 28])
+        #plt.imshow(images[0].reshape([28, 28]), cmap='Greys')
+        #plt.show()
+	filename = "pretrained-model/image_" + str(i) + ".png"
+	plt.savefig(filename, bbox_inches='tight', cmap='Greys')
+	print("image saved at %s" % filename)
+ 
         # Show discriminator's estimate
         im = images[0].reshape([1, 28, 28, 1])
         result = discriminator(x_placeholder)
