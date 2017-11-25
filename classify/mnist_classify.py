@@ -18,58 +18,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
-
-# In[2]:
-
-
-sample_image_d = mnist.train.next_batch(1)
-sample_image = sample_image_d[0]
-y = sample_image_d[1]
-print(sample_image.shape)
-print(y)
-
-sample_image = sample_image.reshape([28, 28])
-plt.imshow(sample_image, cmap='Greys')
-
-
-# Softmax regression model with a single linear layer.
-
-# In[3]:
-
-
-import tensorflow as tf
-sess = tf.InteractiveSession()
-
-x = tf.placeholder(tf.float32, shape=[None, 784])
-y_ = tf.placeholder(tf.float32, shape=[None, 10])
-
-W = tf.Variable(tf.zeros([784,10]))
-b = tf.Variable(tf.zeros([10]))
-
-sess.run(tf.global_variables_initializer())
-
-y = tf.matmul(x,W) + b
-cross_entropy = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
-
-train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
-
-for _ in range(1000):
-  batch = mnist.train.next_batch(100)
-  train_step.run(feed_dict={x: batch[0], y_: batch[1]})
-    
-correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print(accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
-
-
 # Build a Multilayer Convolutional Network
 
 # In[ ]:
 
 
 import tensorflow as tf
-sess = tf.InteractiveSession()
 
 def weight_variable(shape):
   initial = tf.truncated_normal(shape, stddev=0.1)
@@ -128,6 +82,8 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+
+saver = tf.train.Saver()
 # Run
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
@@ -139,6 +95,20 @@ with tf.Session() as sess:
       print('step %d, training accuracy %g' % (i, train_accuracy))
     train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
     
-  print('test accuracy %g' % accuracy.eval(feed_dict={
+  print('test accuracy %g' % accuracy.eval(session=sess, feed_dict={
     x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 
+  save_path = saver.save(sess, "mnist_classify_model.ckpt")
+  print("Model saved in file: %s" % save_path)
+
+# Restore the model and test again
+sess = tf.InteractiveSession()
+sess.run(tf.global_variables_initializer())
+saver = tf.train.Saver()
+# Before restoring
+print('test accuracy %g' % accuracy.eval(session=sess, feed_dict={
+  x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+saver.restore(sess, "mnist_classify_model.ckpt")
+# After restoring
+print('test accuracy %g' % accuracy.eval(session=sess, feed_dict={
+  x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
