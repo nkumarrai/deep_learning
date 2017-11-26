@@ -251,6 +251,7 @@ for i in range(100000):
         writer.add_summary(summary, i)
 
     if i % 100 == 0:
+    	print("dLossReal:", dLossReal, "dLossFake:", dLossFake)
         # Every 100 iterations, show a generated image
         print("Iteration:", i, "at", datetime.datetime.now())
         z_batch = np.random.normal(0, 1, size=[1, z_dimensions])
@@ -260,7 +261,7 @@ for i in range(100000):
         #plt.imshow(images[0].reshape([28, 28]), cmap='Greys')
         #plt.show()
 	filename = "pretrained-model/image_" + str(i) + ".png"
-	plt.savefig(filename, bbox_inches='tight', cmap='Greys')
+	plt.imsave(filename, tmp, cmap='Greys')	
 	print("image saved at %s" % filename)
  
         # Show discriminator's estimate
