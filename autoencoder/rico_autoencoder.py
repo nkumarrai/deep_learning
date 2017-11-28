@@ -10,6 +10,14 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Use ptimizer='adadelta', loss='mean_squared_error'
 # NUM_EPOCHS = 50, BATCH_SIZE = 512
 
+'''
+How to generate input for this encoder?
+1. Generate the layouts for all the unique UI's using generate_layout_rico_dataset.py which uses .json file.
+2. Layout -> resize it to 100x56, separate out texts and non-texts boxes in two b/w images.
+3. Vectorize the two images in a single vector of size (11200, 1).
+4. Save these vectors in .txt files. 
+5. This encoder processes these .txt files.
+'''
 
 BATCH_SIZE    = 500
 epoch_num = 5     # Number of epochs to train the network

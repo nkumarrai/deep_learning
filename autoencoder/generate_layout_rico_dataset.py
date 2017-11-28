@@ -23,7 +23,7 @@ def scale_bounds(node, x_factor, y_factor):
     for child in node.get('children', []):
       scale_bounds(child, x_factor, y_factor)
 
-def get_elem_bounds(orig_image, element):applied_text_element_bounds
+def get_elem_bounds(orig_image, element):
   """Returns bounds for leaf nodes of the view hierarchy."""
   text_bounds = []
   non_text_bounds = []
