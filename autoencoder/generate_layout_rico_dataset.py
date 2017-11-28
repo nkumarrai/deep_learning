@@ -63,20 +63,25 @@ if __name__ == "__main__":
   # view_ids = ["0", "1", "2", "3", "4", "5"]
 
   for view_id in view_ids:
+    name = os.path.join(output_folder_path, view_id + "_layout.jpg")
+    from pathlib import Path
+    my_file = Path(name)
+    if my_file.exists():
+      continue
+
     print "view_id: " + view_id
     try:
       with open(os.path.join(input_folder_path, view_id + ".json")) as data_file:
         view = json.load(data_file)
       image = Image.open(os.path.join(input_folder_path, view_id + ".jpg"))
       width, height = image.size
+      # some images were larger resolution. Rescale those.
+      if width > 540:
+        image = image.resize((540,960), Image.ANTIALIAS)
+      width, height = image.size
     except Exception:
       print " --- Skipping Image {} ---".format(view_id)
       continue
-
-    # some images were larger resolution. Rescale those.
-    if width > 540:
-      image = image.resize((540,960), Image.ANTIALIAS)
-    width, height = image.size
 
     # the view hierarchy has bounds in the pixel dimensions of the screen
     # we have to rescale those to the size of this image

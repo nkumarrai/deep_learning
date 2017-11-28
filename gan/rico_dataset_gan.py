@@ -22,6 +22,7 @@ epoch_num = 5     # Number of epochs to train the network
 lr = 0.001        # Learning rate
 
 file = sys.argv[1]
+dataset_path = sys.argv[2]  #"/home/nkumarrai/sem_3/cse524/rico-dataset/layout/"
 
 input_list = []
 with open(file, 'r') as f:
@@ -47,7 +48,6 @@ test_list = input_list - set(training_list)
 test_list = list(test_list)
 print len(test_list), type(test_list)
 
-dataset_path = "/home/nkumarrai/sem_3/cse524/rico-dataset/layout/"
 train_filepaths = [ dataset_path + fp for fp in training_list]
 test_filepaths = [ dataset_path + fp for fp in test_list]
 
