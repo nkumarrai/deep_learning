@@ -257,12 +257,12 @@ for i in range(100000):
         z_batch = np.random.normal(0, 1, size=[1, z_dimensions])
         generated_images = generator(z_placeholder, 1, z_dimensions)
         images = sess.run(generated_images, {z_placeholder: z_batch})
-	tmp = images[0].reshape([28, 28])
+        tmp = images[0].reshape([28, 28])
         #plt.imshow(images[0].reshape([28, 28]), cmap='Greys')
         #plt.show()
-	filename = "pretrained-model/image_" + str(i) + ".png"
-	plt.imsave(filename, tmp, cmap='Greys')	
-	print("image saved at %s" % filename)
+        filename = "pretrained-model/image_" + str(i) + ".png"
+        plt.imsave(filename, tmp, cmap='Greys')	
+        print("image saved at %s" % filename)
  
         # Show discriminator's estimate
         im = images[0].reshape([1, 28, 28, 1])
