@@ -19,7 +19,7 @@ How to generate input for this encoder?
 '''
 
 BATCH_SIZE = 50
-epoch_num = 5     # Number of epochs to train the network
+epoch_num = 50     # Number of epochs to train the network
 lr = 0.001        # Learning rate
 img_shape = (120, 120, 3) 
 
@@ -120,7 +120,7 @@ def data_iterator(num_train):
 
 def load_files(files_batch_val):
     w, h = img_shape[0], img_shape[1]
-    input_data = np.zeros((BATCH_SIZE,w,h,3))
+    input_data = np.zeros((len(files_batch_val),w,h,3))
     for i in range(len(files_batch_val)):
         img = cv2.imread(files_batch_val[i])
         #img = cv2.resize(img,(540, 960), interpolation = cv2.INTER_CUBIC)
@@ -252,10 +252,9 @@ for i in range(300):
     if(i % 100 == 0):
         print("dLossReal:", dLossReal, "dLossFake:", dLossFake)
 
-# Reinitialize the iterator again
-iter_ = data_iterator(len(train_filepaths))
-
 for ep in range(epoch_num):  # epochs loop
+    # Reinitialize the iterator again
+    iter_ = data_iterator(len(train_filepaths))
     shuffle_train_data(train_filepaths)
     print "Epoch", ep, "started at time", str(datetime.now())
     count = 0
@@ -279,7 +278,7 @@ for ep in range(epoch_num):  # epochs loop
         z_batch = np.random.normal(0, 1, size=[BATCH_SIZE, z_dimensions])
         __ = sess.run(g_trainer, feed_dict={z_placeholder: z_batch})
 
-        if count % 1000 == 0:
+        if (count * BATCH_SIZE) % 1000 == 0:
             # Update TensorBoard with summary statistics
             z_batch = np.random.normal(0, 1, size=[BATCH_SIZE, z_dimensions])
             summary = sess.run(merged, {z_placeholder: z_batch, x_placeholder: batch_images})
