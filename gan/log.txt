@@ -1,0 +1,52 @@
+('dLossReal:', 0.0, 'dLossFake:', 2.4400328e-13)
+('Iteration:', 299, 'at', '2017-11-30 12:57:16.461810')
+image saved at pretrained-model/image_10_60.png
+('Estimate:', array([[-15.0460701]], dtype=float32))
+Epoch 10  images processed 3050
+Epoch 10  images processed 3100
+Epoch 10  images processed 3150
+Epoch 10  images processed 3200
+Epoch 10  images processed 3250
+Epoch 10  images processed 3300
+Epoch 10  images processed 3350
+Epoch 10  images processed 3400
+Epoch 10  images processed 3450
+Epoch 10  images processed 3500
+Epoch 10  images processed 3550
+Epoch 10  images processed 3600
+Epoch 10  images processed 3650
+Epoch 10  images processed 3700
+Epoch 10  images processed 3750
+Epoch 10  images processed 3800
+Epoch 10  images processed 3850
+Epoch 10  images processed 3900
+Epoch 10  images processed 3950
+Epoch 10  images processed 4000
+('dLossReal:', 0.0, 'dLossFake:', 0.00016149592)
+('Iteration:', 299, 'at', '2017-11-30 12:57:29.159453')
+image saved at pretrained-model/image_10_80.png
+('Estimate:', array([[-27.03455734]], dtype=float32))
+Epoch 10  images processed 4050
+Epoch 10  images processed 4100
+Epoch 10  images processed 4150
+Epoch 10  images processed 4200
+Epoch 10  images processed 4250
+Epoch 10  images processed 4300
+Epoch 10  images processed 4350
+Epoch 10  images processed 4400
+Epoch 10  images processed 4450
+Epoch 10  images processed 4500
+Epoch 10  images processed 4550
+Epoch 10  images processed 4600
+Epoch 10  images processed 4650
+Epoch 10  images processed 4700
+Epoch 10  images processed 4750
+Epoch 10  images processed 4800
+Epoch 10  images processed 4850
+Epoch 10  images processed 4900
+Epoch 10  images processed 4950
+Epoch 10  images processed 5000
+('dLossReal:', 0.0, 'dLossFake:', 0.00011200066)
+('Iteration:', 299, 'at', '2017-11-30 12:57:41.328158')
+image saved at pretrained-model/image_10_100.png
+('Estimate:', array([[-31.19087982]], dtype=float32))
