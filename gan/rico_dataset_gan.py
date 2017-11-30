@@ -21,6 +21,7 @@ How to generate input for this encoder?
 BATCH_SIZE = 50
 epoch_num = 5     # Number of epochs to train the network
 lr = 0.001        # Learning rate
+img_shape = (960/2, 540/2, 3) 
 
 def discriminator(images, reuse_variables=None):
     with tf.variable_scope(tf.get_variable_scope(), reuse=reuse_variables) as scope:
@@ -68,10 +69,11 @@ z_dim = 100
 [-1, 1920, 1080, 25] x [1, 1, 25, 1] (strides = [1,2,2,1]) -> [-1, 960, 540, 3]
 '''
 def generator(z, batch_size, z_dim):
-    g_w1 = tf.get_variable('g_w1', [z_dim, 1555200], dtype=tf.float32, initializer=tf.truncated_normal_initializer(stddev=0.02))
-    g_b1 = tf.get_variable('g_b1', [1555200], initializer=tf.truncated_normal_initializer(stddev=0.02))
+    pixels = img_shape[0] * img_shape[1] * img_shape[2]
+    g_w1 = tf.get_variable('g_w1', [z_dim, 4*pixels], dtype=tf.float32, initializer=tf.truncated_normal_initializer(stddev=0.02))
+    g_b1 = tf.get_variable('g_b1', [4*pixels], initializer=tf.truncated_normal_initializer(stddev=0.02))
     g1 = tf.matmul(z, g_w1) + g_b1
-    g1 = tf.reshape(g1, [-1, 960, 540, 3])
+    g1 = tf.reshape(g1, [-1, 2*img_shape[0], 2*img_shape[1], img_shape[2]])
     g1 = tf.contrib.layers.batch_norm(g1, epsilon=1e-5, scope='bn1')
     g1 = tf.nn.relu(g1)
 
@@ -82,7 +84,7 @@ def generator(z, batch_size, z_dim):
     g2 = g2 + g_b2
     g2 = tf.contrib.layers.batch_norm(g2, epsilon=1e-5, scope='bn2')
     g2 = tf.nn.relu(g2)
-    g2 = tf.image.resize_images(g2, [960, 540])
+    g2 = tf.image.resize_images(g2, [2*img_shape[0], 2*img_shape[1]])
 
     # Generate 25 features
     g_w3 = tf.get_variable('g_w3', [3, 3, z_dim/2, z_dim/4], dtype=tf.float32, initializer=tf.truncated_normal_initializer(stddev=0.02))
@@ -91,7 +93,7 @@ def generator(z, batch_size, z_dim):
     g3 = g3 + g_b3
     g3 = tf.contrib.layers.batch_norm(g3, epsilon=1e-5, scope='bn3')
     g3 = tf.nn.relu(g3)
-    g3 = tf.image.resize_images(g3, [960, 540])
+    g3 = tf.image.resize_images(g3, [2*img_shape[0], 2*img_shape[1]])
 
     # Final convolution with one output channel
     g_w4 = tf.get_variable('g_w4', [1, 1, z_dim/4, 3], dtype=tf.float32, initializer=tf.truncated_normal_initializer(stddev=0.02))
@@ -100,7 +102,7 @@ def generator(z, batch_size, z_dim):
     g4 = g4 + g_b4
     g4 = tf.sigmoid(g4)
     
-    # Dimensions of g4: BATCH_SIZE x 960 x 540 x 3
+    # Dimensions of g4: BATCH_SIZE x img_shape[0] x img_shape[1] x 3
     return g4
 
 def shuffle_train_data(train_filepaths):
@@ -117,7 +119,7 @@ def data_iterator(num_train):
         yield files_batch
 
 def load_files(files_batch_val):
-    w, h = 960/2, 540/2
+    w, h = img_shape[0], img_shape[1]
     input_data = np.zeros((BATCH_SIZE,w,h,3))
     for i in range(len(files_batch_val)):
         img = cv2.imread(files_batch_val[i])
@@ -177,7 +179,7 @@ z_dimensions = 100
 z_placeholder = tf.placeholder(tf.float32, [None, z_dimensions], name='z_placeholder') 
 # z_placeholder is for feeding input noise to the generator
 
-x_placeholder = tf.placeholder(tf.float32, shape = [None,960/2,540/2,3], name='x_placeholder') 
+x_placeholder = tf.placeholder(tf.float32, shape = [None, img_shape[0], img_shape[1], img_shape[2]], name='x_placeholder') 
 # x_placeholder is for feeding input images to the discriminator
 
 Gz = generator(z_placeholder, BATCH_SIZE, z_dimensions) 
@@ -285,14 +287,14 @@ for ep in range(epoch_num):  # epochs loop
             generated_images = generator(z_placeholder, 1, z_dimensions)
             images = sess.run(generated_images, {z_placeholder: z_batch})
 
-            tmp = images[0].reshape([960, 540, 3])
+            tmp = images[0].reshape([img_shape[0], img_shape[1], img_shape[2]])
             filename = "pretrained-model/image_" + str(i) + ".png"
             plt.imsave(filename, tmp, cmap='Greys') 
             print("image saved at %s" % filename)
  
 
             # Show discriminator's estimate
-            im = images[0].reshape([1, 960, 540, 3])
+            im = images[0].reshape([1, img_shape[0], img_shape[1], img_shape[2]])
             result = discriminator(x_placeholder)
             estimate = sess.run(result, {x_placeholder: im})
             print("Estimate:", estimate)
