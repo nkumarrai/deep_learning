@@ -21,7 +21,7 @@ How to generate input for this encoder?
 BATCH_SIZE = 50
 epoch_num = 5     # Number of epochs to train the network
 lr = 0.001        # Learning rate
-img_shape = (960/2, 540/2, 3) 
+img_shape = (120, 120, 3) 
 
 def discriminator(images, reuse_variables=None):
     with tf.variable_scope(tf.get_variable_scope(), reuse=reuse_variables) as scope:
@@ -44,9 +44,9 @@ def discriminator(images, reuse_variables=None):
         d2 = tf.nn.avg_pool(d2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
         # First fully connected layer
-        d_w3 = tf.get_variable('d_w3', [7 * 7 * 64, 1024], initializer=tf.truncated_normal_initializer(stddev=0.02))
+        d_w3 = tf.get_variable('d_w3', [(img_shape[0]/4) * (img_shape[1]/4) * 64, 1024], initializer=tf.truncated_normal_initializer(stddev=0.02))
         d_b3 = tf.get_variable('d_b3', [1024], initializer=tf.constant_initializer(0))
-        d3 = tf.reshape(d2, [-1, 7 * 7 * 64])
+        d3 = tf.reshape(d2, [-1, (img_shape[0]/4) * (img_shape[1]/4) * 64])
         d3 = tf.matmul(d3, d_w3)
         d3 = d3 + d_b3
         d3 = tf.nn.relu(d3)
@@ -123,7 +123,10 @@ def load_files(files_batch_val):
     input_data = np.zeros((BATCH_SIZE,w,h,3))
     for i in range(len(files_batch_val)):
         img = cv2.imread(files_batch_val[i])
-        img = cv2.resize(img,(h, w), interpolation = cv2.INTER_CUBIC)
+        #img = cv2.resize(img,(540, 960), interpolation = cv2.INTER_CUBIC)
+        diff = (img.shape[0] - img.shape[1])/2
+        img = cv2.copyMakeBorder(img, 0, 0, diff, diff, cv2.BORDER_CONSTANT, value=[255,255,255])
+        img = cv2.resize(img,(w, h), interpolation = cv2.INTER_CUBIC)
         input_data[i,...] = img
     return input_data 
 
@@ -255,11 +258,14 @@ iter_ = data_iterator(len(train_filepaths))
 for ep in range(epoch_num):  # epochs loop
     shuffle_train_data(train_filepaths)
     print "Epoch", ep, "started at time", str(datetime.now())
+    count = 0
     while True:
         try:
             files_batch_val = iter_.next()
             batch_images = load_files(files_batch_val)
-            print "train batch_images.shape", batch_images.shape
+            count += 1
+            #print "train batch_images.shape", batch_images.shape
+            print "Epoch", ep, " images processed", count * BATCH_SIZE  
         except StopIteration:
             print "Current epoch is done, data was processed in BATCH_SIZE %d" % BATCH_SIZE
             break
@@ -267,19 +273,18 @@ for ep in range(epoch_num):  # epochs loop
         z_batch = np.random.normal(0, 1, size=[BATCH_SIZE, z_dimensions])
         # Train discriminator on both real and fake images
         __, __, dLossReal, dLossFake = sess.run([d_trainer_real, d_trainer_fake, d_loss_real, d_loss_fake],
-                                           {x_placeholder: real_image_batch, z_placeholder: z_batch})
+                                           {x_placeholder: batch_images, z_placeholder: z_batch})
 
         # Train generator
         z_batch = np.random.normal(0, 1, size=[BATCH_SIZE, z_dimensions])
         __ = sess.run(g_trainer, feed_dict={z_placeholder: z_batch})
 
-        if i % 10 == 0:
+        if count % 1000 == 0:
             # Update TensorBoard with summary statistics
             z_batch = np.random.normal(0, 1, size=[BATCH_SIZE, z_dimensions])
-            summary = sess.run(merged, {z_placeholder: z_batch, x_placeholder: real_image_batch})
-            writer.add_summary(summary, i)
+            summary = sess.run(merged, {z_placeholder: z_batch, x_placeholder: batch_images})
+            writer.add_summary(summary, count)
 
-        if i % 100 == 0:
             print("dLossReal:", dLossReal, "dLossFake:", dLossFake)
             # Every 100 iterations, show a generated image
             print("Iteration:", i, "at", str(datetime.now()))
@@ -288,7 +293,7 @@ for ep in range(epoch_num):  # epochs loop
             images = sess.run(generated_images, {z_placeholder: z_batch})
 
             tmp = images[0].reshape([img_shape[0], img_shape[1], img_shape[2]])
-            filename = "pretrained-model/image_" + str(i) + ".png"
+            filename = "pretrained-model/image_" + str(ep) + "_" + str(count) + ".png"
             plt.imsave(filename, tmp, cmap='Greys') 
             print("image saved at %s" % filename)
  
