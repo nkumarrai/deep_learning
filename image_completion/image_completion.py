@@ -25,31 +25,23 @@ n_inputs = height * width
 X = tf.placeholder(tf.float32, shape=[None, height, width, channels])
 y = tf.placeholder(tf.int32, shape=[None], name="y")
 
-conv1 = tf.layers.conv2d(inputs=X, filters=64,  kernle_size=[5, 5], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-
-conv2 = tf.layers.conv2d(inputs=conv1, filters=128, kernle_size=[3, 3], dilation_rate=(1,1), stride=(2,2), padding="same", activation=tf.nn.relu)
-conv3 = tf.layers.conv2d(inputs=conv2, filters=128, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-
-conv4 = tf.layers.conv2d(inputs=conv3, filters=256, kernle_size=[3, 3], dilation_rate=(1,1), stride=(2,2), padding="same", activation=tf.nn.relu)
-conv5 = tf.layers.conv2d(inputs=conv4, filters=256, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-conv6 = tf.layers.conv2d(inputs=conv5, filters=256, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-d_conv1 = tf.layers.conv2d(inputs=conv6,   filters=256, kernle_size=[3, 3], dilation_rate=(2,2), stride=(1,1), padding="same", activation=tf.nn.relu)
-d_conv2 = tf.layers.conv2d(inputs=d_conv1, filters=256, kernle_size=[3, 3], dilation_rate=(4,4), stride=(1,1), padding="same", activation=tf.nn.relu)
-d_conv3 = tf.layers.conv2d(inputs=d_conv2, filters=256, kernle_size=[3, 3], dilation_rate=(8,8), stride=(1,1), padding="same", activation=tf.nn.relu)
-d_conv4 = tf.layers.conv2d(inputs=d_conv3, filters=256, kernle_size=[3, 3], dilation_rate=(16,16), stride=(1,1), padding="same", activation=tf.nn.relu)
-conv7 = tf.layers.conv2d(inputs=d_conv4, filters=256, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-conv8 = tf.layers.conv2d(inputs=conv7,   filters=256, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-
-d_conv5 = tf.layers.conv2d(inputs=conv8, filters=128, kernle_size=[4, 4], dilation_rate=(1,1), stride=(0.5,0.5), padding="same", activation=tf.nn.relu)
-conv9 = tf.layers.conv2d(inputs=d_conv5, filters=128, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-
-d_conv6 = tf.layers.conv2d(inputs=conv9, filters=64, kernle_size=[4, 4], dilation_rate=(1,1), stride=(0.5,0.5), padding="same", activation=tf.nn.relu)
-conv10 = tf.layers.conv2d(inputs=d_conv6, filters=32, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-out = tf.layers.conv2d(inputs=conv10, filters=3, kernle_size=[3, 3], dilation_rate=(1,1), stride=(1,1), padding="same", activation=tf.nn.relu)
-
+conv1 = tf.layers.conv2d(inputs=X, filters=64,  kernel_size=[5, 5], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
 print(conv1)
+
+conv2 = tf.layers.conv2d(inputs=conv1, filters=128, kernel_size=[3, 3], dilation_rate=(1,1), strides=(2,2), padding="same", activation=tf.nn.relu)
+conv3 = tf.layers.conv2d(inputs=conv2, filters=128, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
 print(conv2)
 print(conv3)
+
+conv4 = tf.layers.conv2d(inputs=conv3, filters=256, kernel_size=[3, 3], dilation_rate=(1,1), strides=(2,2), padding="same", activation=tf.nn.relu)
+conv5 = tf.layers.conv2d(inputs=conv4, filters=256, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
+conv6 = tf.layers.conv2d(inputs=conv5, filters=256, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
+d_conv1 = tf.layers.conv2d(inputs=conv6,   filters=256, kernel_size=[3, 3], dilation_rate=(2,2), strides=(1,1), padding="same", activation=tf.nn.relu)
+d_conv2 = tf.layers.conv2d(inputs=d_conv1, filters=256, kernel_size=[3, 3], dilation_rate=(4,4), strides=(1,1), padding="same", activation=tf.nn.relu)
+d_conv3 = tf.layers.conv2d(inputs=d_conv2, filters=256, kernel_size=[3, 3], dilation_rate=(8,8), strides=(1,1), padding="same", activation=tf.nn.relu)
+d_conv4 = tf.layers.conv2d(inputs=d_conv3, filters=256, kernel_size=[3, 3], dilation_rate=(16,16), strides=(1,1), padding="same", activation=tf.nn.relu)
+conv7 = tf.layers.conv2d(inputs=d_conv4, filters=256, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
+conv8 = tf.layers.conv2d(inputs=conv7,   filters=256, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
 print(conv4)
 print(conv5)
 print(conv6)
@@ -59,13 +51,24 @@ print(d_conv3)
 print(d_conv4)
 print(conv7)
 print(conv8)
-print(d_conv5)
-print(conv9)
-print(d_conv6)
-print(conv10)
-print(out)
 
-# pool3 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
+d_conv5 = tf.layers.conv2d_transpose(inputs=conv8, filters=128, kernel_size=[4, 4], strides=(0.5,0.5), padding="same", activation=tf.nn.relu)
+#d_conv5 = tf.nn.conv2d_transpose(conv8, filter=[4, 4, 256, 128], strides=[1, 0.5, 0.5, 1], padding='SAME')
+#conv9 = tf.layers.conv2d(inputs=d_conv5, filters=128, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
+print(d_conv5)
+#print(conv9)
+
+
+#d_conv6 = tf.layers.conv2d_transpose(inputs=conv9, filters=64, kernel_size=[4, 4], strides=(0.5,0.5), padding="same", activation=tf.nn.relu)
+#d_conv6 = tf.nn.conv2d_transpose(conv9, filter=[4, 4, 128, 64], strides=[1, 0.5, 0.5, 1], padding='SAME')
+#conv10 = tf.layers.conv2d(inputs=d_conv6, filters=32, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
+#out = tf.layers.conv2d(inputs=conv10, filters=3, kernel_size=[3, 3], dilation_rate=(1,1), strides=(1,1), padding="same", activation=tf.nn.relu)
+
+#print(d_conv6)
+#print(conv10)
+#print(out)
+
+# pool3 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], stridess=2)
 # pool3_flat = tf.reshape(pool3, [-1, 14 * 14 * 8])
 
 # fc1 = tf.layers.dense(inputs=pool3_flat, units=16, activation=tf.nn.relu, name="fc1", reuse=None)
